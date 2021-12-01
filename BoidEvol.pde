@@ -5,21 +5,25 @@ class Boid  {
     protected boolean isAlive;
     protected float maxForce; //max steering force
     protected float maxSpeed; 
-    protected final float SIZE; //size
+    protected final float SIZE;
     protected final float SEP_WEIGHT;
     protected final float ALI_WEIGHT;
     protected final float COH_WEIGHT;
     protected final float INS_WEIGHT;
     
     public Boid(float x, float y, float SEP_WEIGHT, float ALI_WEIGHT, float COH_WEIGHT, float INS_WEIGHT) {
+        //hard-coded traits
         this.SIZE = 3;
         this.maxForce = 0.1;
         this.maxSpeed = 3;
+
+        //param-defined traits
         this.SEP_WEIGHT = SEP_WEIGHT;
         this.ALI_WEIGHT = ALI_WEIGHT;
         this.COH_WEIGHT = COH_WEIGHT;
         this.INS_WEIGHT = INS_WEIGHT;
         
+        //initialization
         isAlive = true;
         acc = new PVector(0,0);
         float angle = random(TWO_PI);
@@ -29,12 +33,12 @@ class Boid  {
 
     void flock (ArrayList<Boid> curr, ArrayList <Boid> other) {
       //left for individual boid implementation
-  } //flock
+    } //flock
 
     void run (ArrayList <Boid> curr, ArrayList <Boid> other) {
-      flock(curr, other);  
-      update();
-      render();
+      flock(curr, other);  //implemented in children
+      update(); //update pos, vel, acc
+      render(); //draw to screen
     } //run
     
     void applyForce(PVector force) {
@@ -65,7 +69,7 @@ class Boid  {
     void render() {
         float theta = vel.heading() + radians(90);
         
-        fill(200, 100);
+        noFill();
         
         pushMatrix();
         translate(pos.x, pos.y);
