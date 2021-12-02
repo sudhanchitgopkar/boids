@@ -129,6 +129,14 @@ public class BoidIndividual implements Individual {
 
     // genotype getter
     public double[] getGenome() { return genome; }
+    
+    public String printGenome() {
+      String s = "[ ";
+      for (int i = 0; i < genome.length; i++) {
+         s += genome[i] + " ";
+      }
+       return s + "]";
+    } 
 
     // trial setter
     public void setTrial(int trial, double fitness) {
