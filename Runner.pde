@@ -7,10 +7,10 @@ import implementations.BoidIndividual;
 int fit;
 
 final int FRAME_LIMIT = 500;
-final int POPULATION_SIZE = 5;    
+final int POPULATION_SIZE = 2;    
 final int RUNS = 1;
-final int MAX_GENERATIONS = 10;
-final int NUM_TRIALS = BoidIndividual.NUM_TRIALS;
+final int MAX_GENERATIONS = 50;
+final int NUM_TRIALS = 3;
 
 boolean doneSetup = false;
 int generationCounter = 1;
@@ -29,18 +29,17 @@ Sim s;
     
     public void settings() {
       size(500,500);
+      //fullScreen();
     } 
     
     void setup() {
         if (!doneSetup) {
-            FRAME_LIMIT = 500;
             GA_Setup();
             // shuffle the populations
             predatorPopulation.shuffle();
             preyPopulation.shuffle();
 
             doneSetup = true;
-            return;
         }
 
         if (simulationCounter == 0) {
@@ -94,7 +93,8 @@ Sim s;
             // reeset simulation
             background(255,0,0);
             frameCount = 0;
-            s = new Sim(predatorPopulation.getIndividual(simulationCounter).getGenome(), preyPopulation.getIndividual(simulationCounter).getGenome());
+            if (simulationCounter <= POPULATION_SIZE - 1) 
+                s = new Sim(predatorPopulation.getIndividual(simulationCounter).getGenome(), preyPopulation.getIndividual(simulationCounter).getGenome());
           } else {
             // END OF TRIAL
             // reset simulation counter
@@ -107,6 +107,7 @@ Sim s;
             preyPopulation.shuffle();
 
             // reset sim stuff
+            text("Trial: " + trialCounter + "\nGeneration: " + generationCounter, 50,50);
             background(255,0,0);
             frameCount = 0;
           }
