@@ -1,18 +1,21 @@
 package implementations;
 
 import java.util.Random;
+import java.lang.Math;
+import java.util.Arrays;
 
 import ea.Individual;
 
-public class BoidIndividual implements Individual {
+public class BoidIndividual {
     // CONSTANTS
     protected final static double MAX_GENE_RANGE = 5.0;
     protected final static double MIN_GENE_RANGE = 1.0;
 
-	protected final static int DIMENSION = 4;
-    protected static final int NUM_TRIALS = 3; // Must be <= POPULATION_SIZE in BoidEvolution, may need better way to set
-	protected final static double MUTATION_PROBABILITY = 0.1;
-	protected final static double CROSSOVER_PROBABILITY = 0.5;
+    protected final static double POP_SIZE = 10.0;
+  	protected final static int DIMENSION = 4;
+    protected static final int NUM_TRIALS = 5; // Must be <= POPULATION_SIZE in BoidEvolution, may need better way to set
+  	protected final static double MUTATION_PROBABILITY = 1.0 / POP_SIZE;
+  	protected final static double CROSSOVER_PROBABILITY = 1.0;
 
     // Individual's representation ("genotype")
     // Genes are: SEP_WEIGHT, ALI_WEIGHT, COH_WEIGHT, INS_WEIGHT in that order
@@ -37,19 +40,19 @@ public class BoidIndividual implements Individual {
 
         // initialize trials
         trials = new double[NUM_TRIALS];
+        totalFitness = 0.0;
     }
 
 
     protected BoidIndividual(double[] genome) {
         this.genome = genome;
-        trials = new double[DIMENSION];
-        for (int i = 0; i < DIMENSION; i++) {
+        trials = new double[NUM_TRIALS];
+        for (int i = 0; i < NUM_TRIALS; i++) {
             trials[i] = 0.0;
         }
     }
 
     // Individual's fitness function - calculates fitness over all trials
-    @Override
     public double fitness() {
         // check if fitness needs to be updated (REMOVE???)
         if (fitnessNeedsUpdate) {
@@ -57,16 +60,16 @@ public class BoidIndividual implements Individual {
             for (int i = 0; i < NUM_TRIALS; i++) {
                 totalFitness += trials[i];
             }
-            fitnessNeedsUpdate = false;
+            fitnessNeedsUpdate = true;
         }
 
+        totalFitness = totalFitness / NUM_TRIALS;
         // return total fitness 
         return totalFitness;
     }
 
     // Individual's crossover function - returns a new individual
-    @Override
-    public Individual crossover(Individual indiv) {
+    public BoidIndividual crossover(BoidIndividual indiv) {
         // There is a CROSSOVER_PROBABILITY chance of
 		// crossover occurring; if it does not occur then
         // parent with higher fitness is returned
@@ -77,19 +80,19 @@ public class BoidIndividual implements Individual {
         }
 
         // convert indiv to BoidIndividual
-        BoidIndividual other = (BoidIndividual) indiv;
+        BoidIndividual other = indiv;
 
         // perform crossover (randomly)
         if (Math.random() < CROSSOVER_PROBABILITY) {
             double[] childGenome = new double[DIMENSION];
 
             // perform mutation 
-			for (int i = 0; i < DIMENSION; i++) {
-				
-				double alpha = Math.random();
-				childGenome[i] = mix(genome[i], other.genome[i], alpha);
-				
-			}
+  			for (int i = 0; i < DIMENSION; i++) {
+  				
+  				double alpha = Math.random();
+  				childGenome[i] = mix(genome[i], other.genome[i], alpha);
+  				
+  			}
 
             // return new individual
             return new BoidIndividual(childGenome);
@@ -104,7 +107,6 @@ public class BoidIndividual implements Individual {
     }
 
     // Individual's mutation function
-    @Override
     public void mutate() {
         // Uniform random mutation within mutation radius.
 		// MUTATION_PROBABILITY is the probability that any
@@ -133,7 +135,8 @@ public class BoidIndividual implements Individual {
     public String printGenome() {
       String s = "[ ";
       for (int i = 0; i < genome.length; i++) {
-         s += genome[i] + " ";
+         Double roundedGene = Math.round(genome[i] * 100.0) / 100.0;
+         s += roundedGene + " ";
       }
        return s + "]";
     } 

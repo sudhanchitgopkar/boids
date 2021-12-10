@@ -1,4 +1,5 @@
 package ea;
+import implementations.BoidPopulation;
 
 // The purpose of the Selector interface is that the Population
 // uses it during parent selection to randomly select
@@ -11,7 +12,7 @@ public interface Selector {
 	// Given the current state of the population, this method
 	// computes any metadata that will be needed for whatever
 	// selection algorithm the user writes.
-	public void update(Population population);
+	public void update(BoidPopulation population);
 	
 	// Returns the index of the next individual to be selected
 	// for mating.

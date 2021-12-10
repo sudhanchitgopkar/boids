@@ -7,23 +7,22 @@ import implementations.BoidIndividual;
 int fit;
 
 final int FRAME_LIMIT = 500;
-final int POPULATION_SIZE = 5;    
-final int RUNS = 3;
-final int MAX_GENERATIONS = 50;
-final int NUM_TRIALS = 3;
+final int POPULATION_SIZE = 10; // MUST BE SAME IN BoidIndividual
+final int MAX_GENERATIONS = 10;
+final int NUM_TRIALS = 5; // MUST BE SAME AS IN BoidIndividual
 
 boolean doneSetup = false;
-int generationCounter = 1;
+int generationCounter = 0;
 int trialCounter = 0;
 int simulationCounter = 0;
 
-Individual[] predatorBoids;
-Individual[] preyBoids;
+BoidIndividual[] predatorBoids;
+BoidIndividual[] preyBoids;
 ProportionalSelector selector;
 BoidPopulation predatorPopulation;
 BoidPopulation preyPopulation;
-Individual[] predatorResults;
-Individual[] preyResults;
+BoidIndividual[] predatorResults;
+BoidIndividual[] preyResults;
 
 Sim s;
     
@@ -33,6 +32,8 @@ Sim s;
     } 
     
     void setup() {
+        // Uncomment below for zoomies
+        frameRate(100000000);
         if (!doneSetup) {
             GA_Setup();
             // shuffle the populations
@@ -44,7 +45,7 @@ Sim s;
 
         if (simulationCounter == 0) {
             // create first sim
-            s = new Sim(predatorPopulation.getIndividual(0).getGenome(), preyPopulation.getIndividual(0).getGenome());
+            s = new Sim(predatorPopulation.at(0).getGenome(), preyPopulation.at(0).getGenome());
         }
 
         if (generationCounter >= MAX_GENERATIONS) {
@@ -53,8 +54,8 @@ Sim s;
     } 
 
     void GA_Setup() {
-        predatorBoids = new Individual[POPULATION_SIZE];
-        preyBoids = new Individual[POPULATION_SIZE];
+        predatorBoids = new BoidIndividual[POPULATION_SIZE];
+        preyBoids = new BoidIndividual[POPULATION_SIZE];
         
         for (int i = 0; i < POPULATION_SIZE; i++) {
             predatorBoids[i] = new BoidIndividual();
@@ -67,8 +68,20 @@ Sim s;
         preyPopulation = new BoidPopulation(preyBoids);
         
 
-        predatorResults = new Individual[MAX_GENERATIONS];
-        preyResults = new Individual[MAX_GENERATIONS];
+        predatorResults = new BoidIndividual[MAX_GENERATIONS];
+        preyResults = new BoidIndividual[MAX_GENERATIONS];
+        
+        
+        System.out.println("PREDATOR SETUP");
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            System.out.println(predatorPopulation.at(i).printGenome());
+        }
+        System.out.println("PREY SETUP");
+        System.out.println("----------------------------------------------");
+        for (int j = 0; j < POPULATION_SIZE; j++) {
+            System.out.println(preyPopulation.at(j).printGenome());
+        }
+        System.out.println("----------------------------------------------");
     }
     
     void drawHandler() {
@@ -77,14 +90,23 @@ Sim s;
         if (frameCount < FRAME_LIMIT) {
             // performing a simulation
             s.exec();
+            text("Frame Count: " + frameCount, 10, 15);
+            
+            text("Gen Count: " + generationCounter, 400, 15);
+            text("Trial Count: " + trialCounter, 400, 30);
+            text("Sim Count: " + simulationCounter, 400, 45);
+          
+            text("Pred Genome: " + predatorPopulation.at(simulationCounter).printGenome(), 5, 470);
+            text("Prey Genome: " + preyPopulation.at(simulationCounter).printGenome(), 5, 485);
+
         } else {
           if (simulationCounter < POPULATION_SIZE) {
             // simulation has ended
             // assign trial fitnesses
             fit = s.prey.getBoids().size();
             
-            predatorPopulation.getIndividual(simulationCounter).setTrial(trialCounter, 100 - fit);
-            preyPopulation.getIndividual(simulationCounter).setTrial(trialCounter, fit);
+            predatorPopulation.at(simulationCounter).setTrial(trialCounter, 100 - fit);
+            preyPopulation.at(simulationCounter).setTrial(trialCounter, fit);
 
             // reset fit, and increment simulation counter
             fit = 0;
@@ -94,8 +116,10 @@ Sim s;
             background(255,0,0);
             frameCount = 0;
             if (simulationCounter <= POPULATION_SIZE - 1) 
-                s = new Sim(predatorPopulation.getIndividual(simulationCounter).getGenome(), preyPopulation.getIndividual(simulationCounter).getGenome());
-          } else {
+                s = new Sim(predatorPopulation.at(simulationCounter).getGenome(), preyPopulation.at(simulationCounter).getGenome());
+          } 
+          
+          if (simulationCounter == POPULATION_SIZE) {
             // END OF TRIAL
             // reset simulation counter
             simulationCounter = 0;
@@ -107,7 +131,6 @@ Sim s;
             preyPopulation.shuffle();
 
             // reset sim stuff
-            text("Trial: " + trialCounter + "\nGeneration: " + generationCounter, 50,50);
             background(255,0,0);
             frameCount = 0;
           }
@@ -119,9 +142,28 @@ Sim s;
             predatorPopulation.runGeneration(selector);
             preyPopulation.runGeneration(selector);
             
-            System.out.println(predatorPopulation.getIndividual(0).printGenome());
-            System.out.println(preyPopulation.getIndividual(0).printGenome());
+            
+            System.out.println("GENERATION: " + generationCounter);
+            System.out.println("PREDATOR");
+            for (int i = 0; i < POPULATION_SIZE; i++) {
+                System.out.println(predatorPopulation.at(i).printGenome());
+            }
+            System.out.println("Avg Fit: " + predatorPopulation.avgFitness());
+            System.out.println("Max Fit: " + predatorPopulation.maxFitness());
+            BoidIndividual bestPred = predatorPopulation.getBestIndividual();
+            System.out.println("Best Indiv: " + bestPred.printGenome() + "\n");
 
+            
+            System.out.println("PREY");
+            for (int j = 0; j < POPULATION_SIZE; j++) {
+                System.out.println(preyPopulation.at(j).printGenome());
+            }
+            System.out.println("Avg Fit: " + preyPopulation.avgFitness());
+            System.out.println("Max Fit: " + preyPopulation.maxFitness());
+            BoidIndividual bestPrey = preyPopulation.getBestIndividual();
+            System.out.println("Best Indiv: " + bestPrey.printGenome());
+            System.out.println("----------------------------------------------");
+            
             // reset trial counter
             trialCounter = 0;
 
@@ -139,15 +181,3 @@ Sim s;
         //System.out.println("HERE");
         drawHandler();
     }
-
-
-/*
-public class Runner {
-    public static void main(String[] args) {
-        // create instance of BoidEvolution
-        BoidEvolution boidEvolution = new BoidEvolution();
-        boidEvolution.run();
-    }
-}
-
-*/
