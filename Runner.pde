@@ -7,8 +7,8 @@ import implementations.BoidIndividual;
 int fit;
 
 final int FRAME_LIMIT = 500;
-final int POPULATION_SIZE = 2;    
-final int RUNS = 1;
+final int POPULATION_SIZE = 5;    
+final int RUNS = 3;
 final int MAX_GENERATIONS = 50;
 final int NUM_TRIALS = 3;
 
