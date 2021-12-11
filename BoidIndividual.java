@@ -13,7 +13,7 @@ public class BoidIndividual {
 
     protected final static double POP_SIZE = 10.0;
   	protected final static int DIMENSION = 4;
-    protected static final int NUM_TRIALS = 5; // Must be <= POPULATION_SIZE in BoidEvolution, may need better way to set
+    protected static final int NUM_TRIALS = 1; // Must be <= POPULATION_SIZE in BoidEvolution, may need better way to set
   	protected final static double MUTATION_PROBABILITY = 1.0 / POP_SIZE;
   	protected final static double CROSSOVER_PROBABILITY = 1.0;
 
