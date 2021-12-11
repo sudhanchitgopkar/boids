@@ -143,7 +143,7 @@ public class ESBoidPopulation {//extends Population{
 
         //Arrays.copyOf(genome, genome.length);.clone()
 				ESBoidIndividual cGenome = pop[i].crossover(pop[parent2_idx]);
-        children[i*numoffspring + j] = new ESBoidIndividual(cGenome.getGenome(), cGenome.getSigma());//cGenome.length);
+				children[i*numoffspring + j] = new ESBoidIndividual(cGenome.getGenome(), cGenome.getSigma());//cGenome.length);
 				
 				children[i*numoffspring + j].mutate();
 			}
