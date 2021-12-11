@@ -1,29 +1,29 @@
 import ea.Individual;
 import ea.Selector;
-import implementations.ProportionalSelector;
-import implementations.BoidPopulation;
-import implementations.BoidIndividual;
+import implementations.ESSelector;
+import implementations.ESBoidPopulation;
+import implementations.ESBoidIndividual;
 
 int fit;
 
 final int FRAME_LIMIT = 500;
-final int POPULATION_SIZE = 5;    
+final int POPULATION_SIZE = 10; // MUST BE SAME IN BoidIndividual
 final int RUNS = 3;
-final int MAX_GENERATIONS = 50;
-final int NUM_TRIALS = 3;
+final int MAX_GENERATIONS = 10;
+final int NUM_TRIALS = 3; // MUST BE SAME AS IN BoidIndividual
 
 boolean doneSetup = false;
 int generationCounter = 1;
 int trialCounter = 0;
 int simulationCounter = 0;
 
-Individual[] predatorBoids;
-Individual[] preyBoids;
-ProportionalSelector selector;
-BoidPopulation predatorPopulation;
-BoidPopulation preyPopulation;
-Individual[] predatorResults;
-Individual[] preyResults;
+ESBoidIndividual[] predatorBoids;
+ESBoidIndividual[] preyBoids;
+ESSelector selector;
+ESBoidPopulation predatorPopulation;
+ESBoidPopulation preyPopulation;
+ESBoidIndividual[] predatorResults;
+ESBoidIndividual[] preyResults;
 
 Sim s;
     
@@ -33,6 +33,8 @@ Sim s;
     } 
     
     void setup() {
+        // Uncomment below for zoomies
+        frameRate(100000000);
         if (!doneSetup) {
             GA_Setup();
             // shuffle the populations
@@ -48,27 +50,41 @@ Sim s;
         }
 
         if (generationCounter >= MAX_GENERATIONS) {
+            System.out.println("code finished");
             exit();
         }
-    } 
+    }
 
     void GA_Setup() {
-        predatorBoids = new Individual[POPULATION_SIZE];
-        preyBoids = new Individual[POPULATION_SIZE];
+
+        predatorBoids = new ESBoidIndividual[POPULATION_SIZE];
+        preyBoids = new ESBoidIndividual[POPULATION_SIZE];
         
         for (int i = 0; i < POPULATION_SIZE; i++) {
-            predatorBoids[i] = new BoidIndividual();
-            preyBoids[i] = new BoidIndividual();
+            predatorBoids[i] = new ESBoidIndividual();
+            preyBoids[i] = new ESBoidIndividual();
         }
         
         // Create selector and populations
-        selector = new ProportionalSelector();
-        predatorPopulation = new BoidPopulation(predatorBoids);
-        preyPopulation = new BoidPopulation(preyBoids);
+        selector = new ESSelector();
+        predatorPopulation = new ESBoidPopulation(predatorBoids);
+        preyPopulation = new ESBoidPopulation(preyBoids);
         
 
-        predatorResults = new Individual[MAX_GENERATIONS];
-        preyResults = new Individual[MAX_GENERATIONS];
+        predatorResults = new ESBoidIndividual[MAX_GENERATIONS];
+        preyResults = new ESBoidIndividual[MAX_GENERATIONS];
+        
+        
+        System.out.println("PREDATOR SETUP");
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            System.out.println(predatorPopulation.at(i).printGenome());
+        }
+        System.out.println("PREY SETUP");
+        System.out.println("----------------------------------------------");
+        for (int j = 0; j < POPULATION_SIZE; j++) {
+            System.out.println(preyPopulation.at(j).printGenome());
+        }
+        System.out.println("----------------------------------------------");
     }
     
     void drawHandler() {
@@ -119,9 +135,27 @@ Sim s;
             predatorPopulation.runGeneration(selector);
             preyPopulation.runGeneration(selector);
             
-            System.out.println(predatorPopulation.getIndividual(0).printGenome());
-            System.out.println(preyPopulation.getIndividual(0).printGenome());
+            System.out.println("GENERATION: " + generationCounter);
+            System.out.println("PREDATOR");
+            for (int i = 0; i < POPULATION_SIZE; i++) {
+                System.out.println(predatorPopulation.at(i).printGenome());
+            }
+            System.out.println("Avg Fit: " + predatorPopulation.avgFitness());
+            System.out.println("Max Fit: " + predatorPopulation.maxFitness());
+            ESBoidIndividual bestPred = predatorPopulation.getBestIndividual();
+            System.out.println("Best Indiv: " + bestPred.printGenome() + "\n");
 
+            
+            System.out.println("PREY");
+            for (int j = 0; j < POPULATION_SIZE; j++) {
+                System.out.println(preyPopulation.at(j).printGenome());
+            }
+            System.out.println("Avg Fit: " + preyPopulation.avgFitness());
+            System.out.println("Max Fit: " + preyPopulation.maxFitness());
+            ESBoidIndividual bestPrey = preyPopulation.getBestIndividual();
+            System.out.println("Best Indiv: " + bestPrey.printGenome());
+            System.out.println("----------------------------------------------");
+            
             // reset trial counter
             trialCounter = 0;
 

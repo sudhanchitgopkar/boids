@@ -1,6 +1,5 @@
 package implementations;
 
-import ea.Population;
 import ea.Selector;
 
 // Proportional selection. Works by first mapping the population's
@@ -10,12 +9,12 @@ import ea.Selector;
 public class ProportionalSelector implements Selector {
 	
 	protected double[] cumulativeProbs = null;
-	protected Population curPop = null;
+	protected ESBoidPopulation curPop = null;
 	
 	private double epsilon = 0.00001;
 	
 	@Override
-	public void update(Population pop) {
+	public void update(ESBoidPopulation pop) {
 		
 		if (cumulativeProbs == null) reallocate(pop.size());
 		if (cumulativeProbs.length != pop.size()) reallocate(pop.size());
