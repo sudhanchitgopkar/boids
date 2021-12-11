@@ -8,7 +8,6 @@ int fit;
 
 final int FRAME_LIMIT = 500;
 final int POPULATION_SIZE = 10; // MUST BE SAME IN BoidIndividual
-final int RUNS = 3;
 final int MAX_GENERATIONS = 10;
 final int NUM_TRIALS = 3; // MUST BE SAME AS IN BoidIndividual
 
