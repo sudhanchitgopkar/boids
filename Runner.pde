@@ -3,6 +3,7 @@ import ea.Selector;
 import implementations.ESSelector;
 import implementations.ESBoidPopulation;
 import implementations.ESBoidIndividual;
+import FileWritePopulation;
 
 int fit;
 
@@ -20,8 +21,8 @@ int simulationCounter = 0;
 ESBoidIndividual[] predatorBoids;
 ESBoidIndividual[] preyBoids;
 ESSelector selector;
-ESBoidPopulation predatorPopulation;
-ESBoidPopulation preyPopulation;
+FileWritePopulation predatorPopulation;
+FileWritePopulation preyPopulation;
 ESBoidIndividual[] predatorResults;
 ESBoidIndividual[] preyResults;
 
@@ -67,8 +68,8 @@ Sim s;
         
         // Create selector and populations
         selector = new ESSelector();
-        predatorPopulation = new ESBoidPopulation(predatorBoids);
-        preyPopulation = new ESBoidPopulation(preyBoids);
+        predatorPopulation = new FileWritePopulation(predatorBoids);
+        preyPopulation = new FileWritePopulation(preyBoids);
         
 
         predatorResults = new ESBoidIndividual[MAX_GENERATIONS];
