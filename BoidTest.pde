@@ -51,12 +51,21 @@ class Boid  {
         vel.limit(maxSpeed);
         pos.add(vel);
         
-        
+        // Infinite Screen
+        if (pos.x >= width) 
+          pos.x = 0;
+        else if (pos.x <= 0)
+          pos.x = width;
+        if (pos.y >= height) 
+          pos.y = 0;
+        else if (pos.y <= 0)
+          pos.y = height;
+		  
         //inter-wall movement
-        if (pos.x >= width || pos.x <= 0) 
-            vel.x = -1 * vel.x;
-        if (pos.y >= height || pos.y <= 0) 
-            vel.y = -1 * vel.y;
+        //if (pos.x >= width || pos.x <= 0) 
+        //    vel.x = -1 * vel.x;
+        //if (pos.y >= height || pos.y <= 0) 
+        //    vel.y = -1 * vel.y;
         
         //acceleration reset
         acc.mult(0);
