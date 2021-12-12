@@ -117,22 +117,24 @@ public class ESBoidPopulation {//extends Population{
 	//TODO - how is the best individual chosen continuously? the list isn't sorted
 	//implementation seems to work TODO - possibly improve
 	public ESBoidIndividual getBestIndividual() { 
-		if (!muplus){return children[bestChild];}
-		else{
-			double childFit = pop[bestParent].fitness();
-			double parentFit = children[bestChild].fitness();
-			if (childFit > parentFit){return children[bestChild];}
-			else {return pop[bestParent];}
-		}
+		if (children[bestChild].fitness() > pop[bestParent].fitness()) {return children[bestChild];}
+		else {return pop[bestParent];}
 	}
 	
 	public ESBoidIndividual getBestParent() { return pop[bestParent]; }
 	public ESBoidIndividual getBestChild() { return children[bestChild]; }
 	
-	public ESBoidIndividual getBestIndiv() { 
-		if (children[bestChild].fitness() > pop[bestParent].fitness()) {return children[bestChild];}
-		else {return pop[bestParent];}
-	}
+	// public ESBoidIndividual getBestIndividual() { 
+		// if (!muplus){return children[bestChild];}
+		// else{
+			// double childFit = pop[bestParent].fitness();
+			// double parentFit = children[bestChild].fitness();
+			// if (childFit > parentFit){return children[bestChild];}
+			// else {return pop[bestParent];}
+		// }
+	// }
+	
+	
 	
 	//@Override - this should be inherited from population, but it is not
 	protected void repopulate(Selector selector) {
