@@ -145,11 +145,16 @@ public class ESBoidIndividual implements Individual {
 			//double[] childGenome = genome.clone();
       double[] childGenome = Arrays.copyOf(genome, genome.length);
 			
-			for (int i = 0; i < (int)(DIMENSION/2); i++) {
+			
+			for (int i = 0; i < DIMENSION; i++) {//old value - 
 				
         //crossover two of the values from one parent to the other
-				int alpha = (int)Math.random()*DIMENSION;
-        childGenome[alpha] = other.genome[alpha];
+				//int crossover_point = (int)Math.random()*DIMENSION;
+				//int alpha = (int)(0.5*DIMENSION);
+				if (Math.random() < 0.5){
+					childGenome[i] = other.genome[i];
+				}
+				//childGenome[crossover_point] = other.genome[alpha];
 				//childGenome[i] = mix(genome[i], other.genome[i], alpha);
 				
 			}
