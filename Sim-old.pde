@@ -11,16 +11,12 @@ public class Sim {
         prey = new Flock();
         pred = new Flock();
         
-		for (int i = 0; i < NUM_PRED; i++) {
-			float noiseX = random(-50,100);
-			float noiseY = random(-50,100);
-			pred.addBoid(new Predator((width / 2) + noiseX, (height / 2) + noiseY, (float) predWeights[0],  (float) predWeights[1], (float) predWeights[2], (float) predWeights[3]));
+        for (int i = 0; i < NUM_PREY; i++) {
+            prey.addBoid(new Prey(width / 2, height / 2, (float) predWeights[0],  (float) predWeights[1], (float) predWeights[2], (float) predWeights[3]));
         } //for
         
-		for (int i = 0; i < NUM_PREY; i++) {
-			float noiseX = random(-50,100);
-			float noiseY = random(-50,100);
-			prey.addBoid(new Prey((0.25 * width) + noiseX, (0.25 * height) + noiseY, (float) preyWeights[0], (float) preyWeights[1], (float) preyWeights[2], (float) preyWeights[3]));
+        for (int i = 0; i < NUM_PRED; i++) {
+            pred.addBoid(new Predator(0.25 * width, 0.25 * height, (float) preyWeights[0], (float) preyWeights[1], (float) preyWeights[2], (float) preyWeights[3]));
         } //for
     }
     
@@ -28,7 +24,6 @@ public class Sim {
         background(0);
         prey.run(pred.getBoids()); //runs prey
         pred.run(prey.getBoids()); //runs pred
-		text("Prey Alive: " + prey.getBoids().size(), 10, 30);
     } // exec
                 
     void printStats(){

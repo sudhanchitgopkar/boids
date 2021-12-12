@@ -233,8 +233,11 @@ public class ESBoidIndividual implements Individual {
 	
     public String printGenome() {
       String s = "[ ";
+	  Double roundedGene;
       for (int i = 0; i < genome.length; i++) {
-         s += genome[i] + " ";
+         roundedGene = Math.round(genome[i] * 100.0) / 100.0;
+		 s += roundedGene + " ";
+		 
       }
        return s + "]";
     }

@@ -13,7 +13,7 @@ final int NUM_TRIALS = 5; // MUST BE SAME AS IN BoidIndividual
 //manually run 3 times
 
 boolean doneSetup = false;
-int generationCounter = 1;
+int generationCounter = 0;
 int trialCounter = 0;
 int simulationCounter = 0;
 
@@ -93,8 +93,16 @@ Sim s;
         if (frameCount < FRAME_LIMIT) {
             // performing a simulation
             s.exec();
+			  text("Frame Count: " + frameCount, 10, 15);                                                                
+			  text("Gen Count: " + generationCounter, 400, 15);
+			  text("Trial Count: " + trialCounter, 400, 30);
+			  text("Sim Count: " + simulationCounter, 400, 45);
+			  text("Pred Genome: " + predatorPopulation.at(simulationCounter).printGenome(), 5, 470);
+			  text("Prey Genome: " + preyPopulation.at(simulationCounter).printGenome(), 5, 485);  
+
+			
         } else {
-          if (simulationCounter < POPULATION_SIZE) {
+        if (simulationCounter < POPULATION_SIZE) {
             // simulation has ended
             // assign trial fitnesses
             fit = s.prey.getBoids().size();
@@ -109,9 +117,13 @@ Sim s;
             // reeset simulation
             background(255,0,0);
             frameCount = 0;
-            if (simulationCounter <= POPULATION_SIZE - 1) 
-                s = new Sim(predatorPopulation.getIndividual(simulationCounter).getGenome(), preyPopulation.getIndividual(simulationCounter).getGenome());
-          } else {
+            if (simulationCounter <= POPULATION_SIZE - 1) {
+				      s = new Sim(predatorPopulation.getIndividual(simulationCounter).getGenome(), preyPopulation.getIndividual(simulationCounter).getGenome());
+            }
+			  }
+			  if (simulationCounter == POPULATION_SIZE){
+				  //s = new Sim(predatorPopulation.getIndividual(simulationCounter).getGenome(), preyPopulation.getIndividual(simulationCounter).getGenome());
+			    
             // END OF TRIAL
             // reset simulation counter
             simulationCounter = 0;
