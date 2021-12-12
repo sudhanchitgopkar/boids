@@ -2,7 +2,7 @@ class Predator extends Boid {
     public Predator(float x, float y, float SEP_WEIGHT, float ALI_WEIGHT, float COH_WEIGHT, float INS_WEIGHT) {
         super(x, y, SEP_WEIGHT, ALI_WEIGHT, COH_WEIGHT, INS_WEIGHT);
         super.maxForce = 0.2;
-        super.maxSpeed = 7;
+        super.maxSpeed = 4;
     } //Constructor
     
     @Override void flock(ArrayList<Boid> curr, ArrayList <Boid> other) {

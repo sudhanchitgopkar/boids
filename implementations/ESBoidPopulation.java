@@ -2,12 +2,13 @@ package implementations;
 
 import java.util.Random;
 import ea.Individual;
-import ea.Population;
+import ea.Selector;
+//import ea.Population;
 import java.util.Arrays;
 import java.util.Comparator;
 
 
-public class ESBoidPopulation extends Population{
+public class ESBoidPopulation {//extends Population{
 	
 	//current two populations in case mulambda is used instead of mu+lambda
 	protected ESBoidIndividual[] pop;
@@ -25,7 +26,7 @@ public class ESBoidPopulation extends Population{
 	protected int bestParent;
 	protected int bestChild;
 	
-	protected static final int numoffspring = 2;
+	protected static final int numoffspring = 5;
 	protected static final boolean muplus = false;
 	
 	// the comparator allows a sorting function during repopulation
@@ -42,8 +43,8 @@ public class ESBoidPopulation extends Population{
 	// will attempt to do inter-species breeding
 	// and a runtime error will most likely occur.
 	//@Override
-	public ESBoidPopulation(Individual[] population) {
-		super(population);
+	public ESBoidPopulation(ESBoidIndividual[] population) {
+		//super(population);
 		
 		//probably unnecessary 
 		popsize = population.length;
@@ -55,7 +56,7 @@ public class ESBoidPopulation extends Population{
 		//end probably unnecessary
 		
 		children = new ESBoidIndividual[popsize*numoffspring];
-		pop_temp = new ESBoidIndividual[popsize*numoffspring];
+		pop_temp = new ESBoidIndividual[popsize];//*numoffspring
 		
 	}
 	
@@ -81,7 +82,7 @@ public class ESBoidPopulation extends Population{
 	
 	// // Simulates one generation using the parent
 	// // selection mechanism specificed by selector.
-	public void runGeneration(ESSelector selector) {
+	public void runGeneration(Selector selector) {
 		
 		selector.update(this);
 		repopulate(selector);
@@ -101,6 +102,10 @@ public class ESBoidPopulation extends Population{
 	public double maxFitness() { return maxFit; }
 	
 	public double avgFitness() { return avgFit; }
+
+  public int size() { return pop.length; }
+	
+	public int generation() { return gen; }
 	
 	public int numOffspring() {return numoffspring; }
 	
@@ -130,16 +135,21 @@ public class ESBoidPopulation extends Population{
 	}
 	
 	//@Override - this should be inherited from population, but it is not
-	protected void repopulate(ESSelector selector) {
+	protected void repopulate(Selector selector) {
 		
 		//crossover always exists, but may frequently return the main parent in ES
 		for (int i = 0; i < popsize; i++){
 			for (int j = 0; j < numoffspring; ++j){
 				//just use i as parent 1
 				int parent2_idx = selector.select();
-				children[i*numoffspring + j] = pop[i].crossover(pop[parent2_idx]);
+
+        //Arrays.copyOf(genome, genome.length);.clone()
+				ESBoidIndividual cGenome = pop[i].crossover(pop[parent2_idx]);
+				children[i*numoffspring + j] = new ESBoidIndividual(cGenome.getGenome(), cGenome.getSigma());//cGenome.length);
 				
 				children[i*numoffspring + j].mutate();
+        //center variables does not seem to work yet
+        //children[i*numoffspring + j].center_vars();
 			}
 		}
 		childSorted = false;
@@ -269,7 +279,7 @@ public class ESBoidPopulation extends Population{
 		avgFit /= (double)popsize;
 	}
 	
-	@Override
+	//@Override
 	protected void updateStats() {
 		if (pop != null){updatePopStats();}
 		if (children != null && children[0] != null) {updateChildStats();}

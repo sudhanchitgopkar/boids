@@ -237,7 +237,7 @@ public class ESBoidIndividual implements Individual {
          s += genome[i] + " ";
       }
        return s + "]";
-    } 
+    }
 
 	public void center_vars(){
 		//this function just centers the variables since all variables are based on relations between each other

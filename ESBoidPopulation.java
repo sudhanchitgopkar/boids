@@ -105,6 +105,8 @@ public class ESBoidPopulation {//extends Population{
 
   public int size() { return pop.length; }
 	
+	public int generation() { return gen; }
+	
 	public int numOffspring() {return numoffspring; }
 	
 	public ESBoidIndividual at(int pos) {return pop[pos];}

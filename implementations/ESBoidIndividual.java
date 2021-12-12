@@ -1,6 +1,7 @@
 package implementations;
 
 import java.util.Random;
+import java.util.Arrays;
 
 import ea.Individual;
 
@@ -14,7 +15,7 @@ public class ESBoidIndividual implements Individual {
 	// protected final static double E = 2.71828;
 
 	protected final static int DIMENSION = 4;
-    protected static final int NUM_TRIALS = 3; // Must be <= POPULATION_SIZE in BoidEvolution, may need better way to set
+    protected static final int NUM_TRIALS = 5; // Must be <= POPULATION_SIZE in BoidEvolution, may need better way to set
 	protected final static double MUTATION_PROBABILITY = 0.8;
 	protected final static double CROSSOVER_PROBABILITY = 0.25;
 	
@@ -70,9 +71,9 @@ public class ESBoidIndividual implements Individual {
     // }
 	
 	protected ESBoidIndividual(double [] genome, double sigma) { 
-		this.genome = genome;
+		this.genome = Arrays.copyOf(genome, genome.length);//genome.clone()
 		this.sigma = sigma;
-		trials = new double[DIMENSION];
+		trials = new double[NUM_TRIALS];
 		for (int i = 0; i < DIMENSION; i++) {
             trials[i] = 0.0;
         }
@@ -141,7 +142,8 @@ public class ESBoidIndividual implements Individual {
 		if (CROSS &&( Math.random() <= CROSSOVER_PROBABILITY)) {
 			
 			//ESBoidIndividual esbindiv = (ESBoidIndividual)indiv;
-			double[] childGenome = genome.clone();
+			//double[] childGenome = genome.clone();
+      double[] childGenome = Arrays.copyOf(genome, genome.length);
 			
 			for (int i = 0; i < (int)(DIMENSION/2); i++) {
 				
@@ -157,7 +159,7 @@ public class ESBoidIndividual implements Individual {
 			return new ESBoidIndividual(childGenome, childSigma);
 			
 		}
-		else return new ESBoidIndividual(genome.clone(), sigma);
+		else return new ESBoidIndividual(Arrays.copyOf(genome, genome.length), sigma);//genome.clone()
 		
 	}
 
@@ -213,7 +215,9 @@ public class ESBoidIndividual implements Individual {
 
     // genotype getter
     public double[] getGenome() { return genome; }
-	
+	  
+    public double getSigma() { return sigma; }
+
 	public double getFitness() { return totalFitness; }
     
 	public String ESString(){
@@ -233,7 +237,12 @@ public class ESBoidIndividual implements Individual {
          s += genome[i] + " ";
       }
        return s + "]";
-    } 
+    }
+	
+	// trial setter
+    public void setTrial(int trial, double fitness) {
+        trials[trial] = fitness;
+    }
 
 	public void center_vars(){
 		//this function just centers the variables since all variables are based on relations between each other
@@ -243,7 +252,7 @@ public class ESBoidIndividual implements Individual {
 		//acquire the spread of the variables
 		double min_dimen = genome[0];
 		double max_dimen = genome[0];
-		double [] temp_genome = genome.clone();
+		double [] temp_genome = Arrays.copyOf(genome, genome.length);//genome.clone();
 		int pivot = 0;
 		
 		for (int i = 1; i < DIMENSION; ++i){
@@ -251,18 +260,23 @@ public class ESBoidIndividual implements Individual {
 			else if (genome[i] > max_dimen){min_dimen = genome[i];}
 		}
 		
-		double var_mid = (max_dimen - min_dimen)/2;
-		double absolute_mid = (MAX_GENE_RANGE-MIN_GENE_RANGE)/2;
+		double var_mid = (max_dimen - min_dimen)/2.;
+		double var_center = (max_dimen + min_dimen)/2.;
+    double absolute_mid = (MAX_GENE_RANGE-MIN_GENE_RANGE)/2.;
+    double absolute_center = (MAX_GENE_RANGE+MIN_GENE_RANGE)/2.;
 		
 		//centers the values, simple multiplier applied (multiplier could make the result off-center)
 		//the formula could be improved to make completely centered
-		for (int i = 1; i < DIMENSION; ++i){
+		System.out.println("before: " + printGenome());
+    temp_genome[0] = genome[0] + (absolute_center - var_center);
+    for (int i = 1; i < DIMENSION; ++i){
 			//centers the value
-			temp_genome[i] = genome[i] + (absolute_mid - var_mid);
-			//modifies the value to be in line with ratio
-			temp_genome[i] = temp_genome[i]/(genome[i]/genome[pivot]);
+			
+      //modifies the value to be in line with ratio
+			temp_genome[i] = temp_genome[i]/(temp_genome[pivot]/genome[pivot]);
 		}
 		genome = temp_genome;
+    System.out.println("after: " + printGenome());
 	}
 
     // Intermediate crossover
