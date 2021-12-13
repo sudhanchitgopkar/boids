@@ -22,6 +22,7 @@ public class ESBoidPopulation {//extends Population{
 	protected double minFit;
 	protected double maxFit;
   protected double maxOffFit;
+  protected double maxParFit;
 	protected double avgFit;
   protected double avgOffFit;
 	//protected int bestIndiv;
@@ -47,7 +48,14 @@ public class ESBoidPopulation {//extends Population{
 	// and a runtime error will most likely occur.
 	//@Override
 	public ESBoidPopulation(ESBoidIndividual[] population, Selector selector) {
-		//super(population);
+		
+    minFit = 0;
+    maxFit = 0;
+    maxOffFit = 0;
+    maxParFit = 0;
+    avgFit = 0;
+    avgOffFit = 0;
+    //super(population);
 		
 		//probably unnecessary 
 		popsize = population.length;
@@ -113,6 +121,8 @@ public class ESBoidPopulation {//extends Population{
 	public double maxFitness() { return maxFit; }
   
   public double maxOffFitness() { return maxOffFit; }
+  
+  public double maxParFitness() { return maxParFit; }
 	
 	public double avgFitness() { return avgFit; }
 
@@ -304,11 +314,11 @@ public class ESBoidPopulation {//extends Population{
 	protected void updatePopStats() {
 		
 		double minParFit = pop[0].fitness();
-		double maxParFit = pop[0].fitness();
+		maxParFit = pop[0].fitness();
 		
 		avgFit = 0.0;
 		bestParent = 0;
-		
+  
 		for (int i = 1; i < popsize; i++) {
 			if (pop[i].fitness() < minParFit) {
 				

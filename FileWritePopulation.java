@@ -13,7 +13,11 @@ public class FileWritePopulation extends ESBoidPopulation {
 	protected int maxGens;
 	protected String maxFitness[];
 	protected String avgFitness[];
+  protected String maxOffFitness[];
+  protected String avgOffFitness[];
 	protected String bestIndividual[];
+  protected String bestParent[];
+  protected String bestChild[];
 	
 	public FileWritePopulation(ESBoidIndividual[] population, Selector selector, int maxGenerations) { 
 		
@@ -22,7 +26,11 @@ public class FileWritePopulation extends ESBoidPopulation {
 		maxGens = maxGenerations;
 		maxFitness = new String[maxGens];
 		avgFitness = new String[maxGens];
+    maxOffFitness = new String[maxGens];
+    avgOffFitness = new String[maxGens];
 		bestIndividual = new String[maxGens];
+    bestParent = new String[maxGens];
+    bestChild = new String[maxGens];
 		
 	}
 	
@@ -37,7 +45,13 @@ public class FileWritePopulation extends ESBoidPopulation {
 			FileWriter writer = new FileWriter(outputFile);
 			fileWriteHelper(writer, "MAX FITNESS", maxFitness, generationPrintGap);
 			fileWriteHelper(writer, "AVG FITNESS", avgFitness, generationPrintGap);
+      
+      fileWriteHelper(writer, "MAX OFFSPRING FITNESS", maxOffFitness, generationPrintGap);
+      fileWriteHelper(writer, "AVG OFFSPRING FITNESS", avgOffFitness, generationPrintGap);
+      
 			fileWriteHelper(writer, "BEST INDIVIDUAL", bestIndividual, generationPrintGap);
+      fileWriteHelper(writer, "BEST PARENT", bestParent, generationPrintGap);
+      fileWriteHelper(writer, "BEST CHILD", bestChild, generationPrintGap);
 			System.out.println("Written file to " + outputFile);
 			writer.close();
 			
@@ -77,15 +91,18 @@ public class FileWritePopulation extends ESBoidPopulation {
       //given the reliance on Offspring population, the offspring are the generation
       //with more time, this should be updated to the current population instead
       
-      //using offspring generation
-      //maxFitness[gen] = Double.toString(maxOffFit);
-      //avgFitness[gen] = Double.toString(avgOffFit);
       
       //using parent generation
-      maxFitness[gen] = Double.toString(maxFit);
+      maxFitness[gen] = Double.toString(maxParFit);
       avgFitness[gen] = Double.toString(avgFit);
-      bestIndividual[gen] = getBestIndividual().ESString();//from toString
       
+      //using offspring generation
+      maxOffFitness[gen] = Double.toString(maxOffFit);
+      avgOffFitness[gen] = Double.toString(avgOffFit);
+      
+      bestIndividual[gen] = getBestIndividual().ESString();//from toString
+      bestParent[gen] = getBestParent().ESString();
+      bestChild[gen] = getBestChild().ESString();
     }
 		selector.update(this);
 		repopulate(selector);
