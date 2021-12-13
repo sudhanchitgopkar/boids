@@ -1,6 +1,9 @@
-import ea.ESBoidPopulation;
-import ea.ESBoidIndividual;
-import ea.ESBoidSelector;
+package implementations;
+
+import ea.Selector;
+import implementations.ESBoidPopulation;
+import implementations.ESBoidIndividual;
+import implementations.ESSelector;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,9 +15,9 @@ public class FileWritePopulation extends ESBoidPopulation {
 	protected String avgFitness[];
 	protected String bestIndividual[];
 	
-	public FileWritePopulation(ESBoidIndividual[] population, int maxGenerations) { 
+	public FileWritePopulation(ESBoidIndividual[] population, Selector selector, int maxGenerations) { 
 		
-		super(population); 
+		super(population, selector); 
 		
 		maxGens = maxGenerations;
 		maxFitness = new String[maxGens];
@@ -35,7 +38,7 @@ public class FileWritePopulation extends ESBoidPopulation {
 			fileWriteHelper(writer, "MAX FITNESS", maxFitness, generationPrintGap);
 			fileWriteHelper(writer, "AVG FITNESS", avgFitness, generationPrintGap);
 			fileWriteHelper(writer, "BEST INDIVIDUAL", bestIndividual, generationPrintGap);
-			
+			System.out.println("Written file to " + outputFile);
 			writer.close();
 			
 		}
@@ -68,17 +71,21 @@ public class FileWritePopulation extends ESBoidPopulation {
 	@Override
 	public void runGeneration(Selector selector) {
 		
+    updateStats();
+    if (gen < maxGens) {
+      
+      //given the reliance on Offspring population, the offspring are the generation
+      //with more time, this should be updated to the current population instead
+      maxFitness[gen] = Double.toString(maxOffFit);
+      avgFitness[gen] = Double.toString(avgOffFit);
+      bestIndividual[gen] = getBestIndividual().ESString();//from toString
+      
+    }
 		selector.update(this);
 		repopulate(selector);
-		updateStats();
 		
-		if (gen < maxGens) {
-			
-			maxFitness[gen] = Double.toString(maxFit);
-			avgFitness[gen] = Double.toString(avgFit);
-			bestIndividual[gen] = getBestIndividual().toString();
-			
-		}
+		
+		
 		
 		gen++;
 		

@@ -21,17 +21,19 @@ public class ESBoidPopulation {//extends Population{
 	protected int gen;
 	protected double minFit;
 	protected double maxFit;
+  protected double maxOffFit;
 	protected double avgFit;
+  protected double avgOffFit;
 	//protected int bestIndiv;
 	protected int bestParent;
 	protected int bestChild;
 	
-	protected static final int numoffspring = 5;
+	protected static final int numoffspring = 3;
 	protected static final boolean muplus = false;
 	
 	// the comparator allows a sorting function during repopulation
-	class sortByFitness implements Comparator<Individual>{
-		public int compare(Individual a, Individual b){
+	class sortByFitness implements Comparator<ESBoidIndividual>{
+		public int compare(ESBoidIndividual a, ESBoidIndividual b){
 			return Double.compare(a.fitness(), b.fitness());
 		}
 	}
@@ -43,7 +45,7 @@ public class ESBoidPopulation {//extends Population{
 	// will attempt to do inter-species breeding
 	// and a runtime error will most likely occur.
 	//@Override
-	public ESBoidPopulation(ESBoidIndividual[] population) {
+	public ESBoidPopulation(ESBoidIndividual[] population, Selector selector) {
 		//super(population);
 		
 		//probably unnecessary 
@@ -51,18 +53,25 @@ public class ESBoidPopulation {//extends Population{
 		
 		gen = 0;
 		pop = new ESBoidIndividual[popsize];
-		for (int i = 0; i < popsize; i++) pop[i] = (ESBoidIndividual)population[i];
-		updateStats();
+		for (int i = 0; i < popsize; i++) pop[i] = population[i];//new ESBoidIndividual(population[i]);
+		
 		//end probably unnecessary
 		
 		children = new ESBoidIndividual[popsize*numoffspring];
 		pop_temp = new ESBoidIndividual[popsize];//*numoffspring
-		
+
+		selector.update(this);
+    repopulate(selector);
+    updateStats();
 	}
 	
 	// getter for individual
     public ESBoidIndividual getIndividual(int index) {
         return (ESBoidIndividual) pop[index];
+    }
+    
+    public ESBoidIndividual getOffspring(int index) {
+        return (ESBoidIndividual) children[index];
     }
 	
 	// shuffle the population
@@ -73,6 +82,7 @@ public class ESBoidPopulation {//extends Population{
         Random r = new Random();
         for (int i = pop.length - 1; i > 0; i--) {
             index = r.nextInt(i + 1);
+            //System.out.println("previous children temp 1: "+ Double.toString(pop_temp[0].getTrial(0)));
             temp = pop[index];
             pop[index] = pop[i];
             pop[i] = temp;
@@ -85,8 +95,8 @@ public class ESBoidPopulation {//extends Population{
 	public void runGeneration(Selector selector) {
 		
 		selector.update(this);
+    updateStats();
 		repopulate(selector);
-		updateStats();
 		gen++;
 		
 	}
@@ -100,19 +110,36 @@ public class ESBoidPopulation {//extends Population{
 	// public double minFitness() { return minFit; }
 	
 	public double maxFitness() { return maxFit; }
+  
+  public double maxOffFitness() { return maxOffFit; }
 	
 	public double avgFitness() { return avgFit; }
 
+  public double avgOffFitness() { return avgOffFit; }
+
   public int size() { return pop.length; }
 	
+  //public int offSize() { return children.length; }
+  
 	public int generation() { return gen; }
 	
-	public int numOffspring() {return numoffspring; }
+	public static int getNumOffspring() {return numoffspring; }
 	
 	public ESBoidIndividual at(int pos) {return pop[pos];}
 
+  public void setIndTrial(int indPos, int trial, int fitness){
+    pop[indPos].setTrial(trial, fitness);
+  }
+  
+  public void setOffTrial(int indPos, int trial, int fitness){
+    children[indPos].setTrial(trial, fitness);
+  }
+  
+  public double getOffTrial(int indPos, int trial){
+    return children[indPos].getTrial(trial);
+  }
+
   //best individual is not implemented, but combines a sorted parent and child
-	
 	
 	//TODO - how is the best individual chosen continuously? the list isn't sorted
 	//implementation seems to work TODO - possibly improve
@@ -138,15 +165,83 @@ public class ESBoidPopulation {//extends Population{
 	
 	//@Override - this should be inherited from population, but it is not
 	protected void repopulate(Selector selector) {
-		
-		//crossover always exists, but may frequently return the main parent in ES
+		if (children[0] != null){
+      childSorted = false;
+      updateChildStats();
+  		//repopulate based on muplus or lambda selection
+      
+      if (!popSorted){
+        Arrays.sort(pop, new sortByFitness());
+        popSorted = true;
+      }
+      if (!childSorted){
+        Arrays.sort(children, new sortByFitness());
+        childSorted = true;
+      }
+      
+      double childFit;
+      double parentFit;
+      // ESBoidIndividual bestChild;
+      // ESBoidIndividual bestParent;
+      
+      int parPos = 0;
+      int childPos = 0;
+      if (!muplus){
+        for (int i=0; i < popsize; i++){
+          pop_temp[i] = children[i];
+        }
+      }
+      else{
+        for (int i=0; i < popsize; i++){
+          //check if one has finished the array
+          if (parPos < pop.length){
+            parentFit = pop[parPos].fitness();
+          }
+          else{
+            pop_temp[i] = children[childPos];
+            childPos++;
+            continue;
+          }
+          if (childPos < children.length){
+            childFit = children[childPos].fitness();
+          }
+          else{
+            pop_temp[i] = pop[parPos];
+            parPos++;
+            continue;
+          }
+          
+          if (childFit < parentFit){
+            pop_temp[i] = pop[parPos];
+            parPos++;
+          }
+          else{
+            pop_temp[i] = children[childPos];
+            childPos++;
+          }
+          
+        }
+
+      }
+      //System.out.println("previous children temp 1: "+ Double.toString(children[0].getFitness(0)));
+      //System.out.println("previous children temp 1: "+ Double.toString(children[0].getTrial(0)));
+      //System.out.println("previous pop temp 1: "+ Double.toString(pop_temp[0].getFitness()));
+      //System.out.println("previous children temp 1: "+ Double.toString(pop_temp[0].getTrial(0)));
+      
+      pop = pop_temp;
+      //System.out.println("post pop temp 1: "+ Double.toString(pop[0].getFitness()));
+      //System.out.println("post pop temp 1: "+ Double.toString(pop[0].getTrial(0)));
+        
+    }
+    //crossover always exists, but may frequently return the main parent in ES
 		for (int i = 0; i < popsize; i++){
 			for (int j = 0; j < numoffspring; ++j){
 				//just use i as parent 1
 				int parent2_idx = selector.select();
 
         //Arrays.copyOf(genome, genome.length);.clone()
-				ESBoidIndividual cGenome = pop[i].crossover(pop[parent2_idx]);
+				ESBoidIndividual cGenome = pop[i].crossover((ESBoidIndividual)(pop[parent2_idx]));
+        
 				children[i*numoffspring + j] = new ESBoidIndividual(cGenome.getGenome(), cGenome.getSigma());//cGenome.length);
 				
 				children[i*numoffspring + j].mutate();
@@ -154,73 +249,17 @@ public class ESBoidPopulation {//extends Population{
         //children[i*numoffspring + j].center_vars();
 			}
 		}
-		childSorted = false;
-		updateChildStats();
 		
-		//repopulate based on muplus or lambda selection
 		
-		if (!popSorted){
-			Arrays.sort(pop, new sortByFitness());
-			popSorted = true;
+		//updateStats();
 		}
-		if (!childSorted){
-			Arrays.sort(children, new sortByFitness());
-			childSorted = true;
-		}
-		
-		double childFit;
-		double parentFit;
-		// ESBoidIndividual bestChild;
-		// ESBoidIndividual bestParent;
-		
-		int parPos = 0;
-		int childPos = 0;
-		if (!muplus){
-			for (int i=0; i < popsize; i++){
-				pop_temp[i] = children[i];
-			}
-		}
-		else{
-			for (int i=0; i < popsize; i++){
-				//check if one has finished the array
-				if (parPos < pop.length){
-					parentFit = pop[parPos].fitness();
-				}
-				else{
-					pop_temp[i] = children[childPos];
-					childPos++;
-					continue;
-				}
-				if (childPos < children.length){
-					childFit = children[childPos].fitness();
-				}
-				else{
-					pop_temp[i] = pop[parPos];
-					parPos++;
-					continue;
-				}
-				
-				if (childFit < parentFit){
-					pop_temp[i] = pop[parPos];
-					parPos++;
-				}
-				else{
-					pop_temp[i] = children[childPos];
-					childPos++;
-				}
-				
-			}
-		}
-		
-		pop = pop_temp;
-		
-		updateStats();
-	}
 	
 	protected void updateChildStats() {
-		
+    
 		double minChildFit = children[0].fitness();
 		double maxChildFit = children[0].fitness();
+    maxOffFit = 0;
+    avgOffFit = 0;
 		
 		bestChild = 0;
 		for (int i = 1; i < popsize*numoffspring; i++) {
@@ -237,12 +276,18 @@ public class ESBoidPopulation {//extends Population{
 				bestChild = i;
 				
 			}
+      avgOffFit += children[i].fitness();
+      
+      //if (children[i].fitness() > 0){
+      //  System.out.println("something went right");
+      //}
 			
 		}
 		
 		if (minChildFit < minFit){ minFit = minChildFit; }
 		if (maxChildFit > maxFit){ maxFit = maxChildFit; }
-		
+    if (maxChildFit > maxOffFit){ maxOffFit = maxChildFit; }
+    avgOffFit /= children.length;
 	}
 	
 	protected void updatePopStats() {
@@ -254,13 +299,13 @@ public class ESBoidPopulation {//extends Population{
 		bestParent = 0;
 		
 		for (int i = 1; i < popsize; i++) {
-			if (pop[i].fitness() > minParFit) {
+			if (pop[i].fitness() < minParFit) {
 				
 				minParFit = pop[i].fitness();
 				//bestParent = i;
 				
 			}
-			else if (pop[i].fitness() < maxParFit) {
+			else if (pop[i].fitness() > maxParFit) {
 				
 				maxParFit = pop[i].fitness();
 				bestParent = i;
@@ -268,6 +313,7 @@ public class ESBoidPopulation {//extends Population{
 			}
 			
 			avgFit += pop[i].fitness();
+      //System.out.println("average fit increase: " + Double.toString(avgFit));
 			
 		}
 		
@@ -283,6 +329,8 @@ public class ESBoidPopulation {//extends Population{
 	
 	//@Override
 	protected void updateStats() {
+    //System.out.println("update occurs" + Double.toString(avgOffFit));
+    
 		if (pop != null){updatePopStats();}
 		if (children != null && children[0] != null) {updateChildStats();}
 		

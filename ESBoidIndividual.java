@@ -54,7 +54,9 @@ public class ESBoidIndividual implements Individual {
 		
         // initialize trials
         trials = new double[NUM_TRIALS];
-		
+		    for (int i = 0; i < trials.length; i++) {
+             trials[i] = 0.0;
+        }
 		//if not declaring from a genome, probably a good warning
 		printed = false;
 		
@@ -74,7 +76,7 @@ public class ESBoidIndividual implements Individual {
 		this.genome = Arrays.copyOf(genome, genome.length);//genome.clone()
 		this.sigma = sigma;
 		trials = new double[NUM_TRIALS];
-		for (int i = 0; i < DIMENSION; i++) {
+		for (int i = 0; i < trials.length; i++) {
             trials[i] = 0.0;
         }
 		
@@ -83,6 +85,23 @@ public class ESBoidIndividual implements Individual {
 		
 		fitnessNeedsUpdate = true;
 	}
+
+  protected ESBoidIndividual(ESBoidIndividual other) { 
+    //double [] genome, double sigma
+    System.out.println(other.ESString());
+    this.genome = Arrays.copyOf(other.genome, other.genome.length);
+    this.sigma = other.sigma;
+    trials = new double[NUM_TRIALS];
+    for (int i = 0; i < DIMENSION; i++) {
+            trials[i] = 0.0;
+        }
+    
+    
+    //if declaring from a genome, likely already printed once
+    printed = true;
+    
+    fitnessNeedsUpdate = true;
+  }
 	
 	//for compilation checking only
 	//private double ackleyFunctOff2() {
@@ -104,18 +123,23 @@ public class ESBoidIndividual implements Individual {
     @Override
     public double fitness() {
         // check if fitness needs to be updated (REMOVE???)
+        totalFitness = 0.0;
+        for (int i = 0; i < trials.length; i++) {
+          totalFitness += trials[i];
+        }
         if (fitnessNeedsUpdate) {
-            totalFitness = 0.0;
-            for (int i = 0; i < NUM_TRIALS; i++) {
-                totalFitness += trials[i];
-            }
+            
 			
 			//TODO: only returning Ackley Function
 			//totalFitness = ackleyFunctOff2();
 			
             fitnessNeedsUpdate = false;
         }
-
+        if (totalFitness > 0){
+          //System.out.println("setting correct: ");// + double.toString(totalFitness) + printGenome());}
+          // System.out.println(totalFitness);
+          // System.out.println(printGenome());
+        }
         // return total fitness 
         return totalFitness;
     }
@@ -131,7 +155,7 @@ public class ESBoidIndividual implements Individual {
 		// the child.
 		
 		// check if individuals are of the same type
-        
+    
 		if (!(indiv instanceof ESBoidIndividual)) {
             throw new IllegalArgumentException("Cannot crossover with a different type of individual");
         }
@@ -216,6 +240,11 @@ public class ESBoidIndividual implements Individual {
     // trial setter
     public void setTrial(int trial, double fitness) {
         trials[trial] = fitness;
+        //System.out.println("trial setting: " + Double.toString(trials[trial]));
+    }
+    
+    public double getTrial(int trial) {
+        return trials[trial];
     }
 
     // genotype getter
@@ -223,12 +252,21 @@ public class ESBoidIndividual implements Individual {
 	  
     public double getSigma() { return sigma; }
 
-	public double getFitness() { return totalFitness; }
+	public double getFitness() { 
+    for (int i = 0; i < trials.length; i++) {
+      totalFitness += trials[i];
+    }
+    
+    if (totalFitness > 0){System.out.println("setting correct: " + ESString());}
+    
+    return totalFitness; 
+  }
     
 	public String ESString(){
 		String rep = "fitness: " + String.valueOf(fitness()) + ", genome: [";
 		for(int i=0; i<DIMENSION - 1; ++i){
-			rep = rep + String.valueOf(genome[i]) + ", ";
+      double roundedGene = Math.round(genome[i] * 100.0) / 100.0;
+			rep = rep + String.valueOf(roundedGene) + ", ";
 			}
 		rep = rep + String.valueOf(genome[DIMENSION - 1]);
 		sigma = r_mut_range();
@@ -238,10 +276,10 @@ public class ESBoidIndividual implements Individual {
 	
     public String printGenome() {
       String s = "[ ";
-	  Double roundedGene;
+	    Double roundedGene;
       for (int i = 0; i < genome.length; i++) {
          roundedGene = Math.round(genome[i] * 100.0) / 100.0;
-		 s += roundedGene + " ";
+		     s += roundedGene + " ";
 		 
       }
        return s + "]";
