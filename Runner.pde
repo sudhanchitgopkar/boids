@@ -7,10 +7,10 @@ import implementations.FileWritePopulation;
 
 int fit;
 
-final int FRAME_LIMIT = 500;
+final int FRAME_LIMIT = 125;//TODO 500
 final int POPULATION_SIZE = 6; // MUST BE SAME IN BoidIndividual
-final int MAX_GENERATIONS = 5;
-final int NUM_TRIALS = 5; // MUST BE SAME AS IN BoidIndividual
+final int MAX_GENERATIONS = 3;
+final int NUM_TRIALS = 3; // MUST BE SAME AS IN BoidIndividual
 //manually run 3 times
 
 boolean doneSetup = false;

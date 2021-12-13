@@ -34,7 +34,8 @@ public class ESBoidPopulation {//extends Population{
 	// the comparator allows a sorting function during repopulation
 	class sortByFitness implements Comparator<ESBoidIndividual>{
 		public int compare(ESBoidIndividual a, ESBoidIndividual b){
-			return Double.compare(a.fitness(), b.fitness());
+			//return Double.compare(a.fitness(), b.fitness());
+      return -Double.compare(a.totalFitness, b.totalFitness);
 		}
 	}
 	
@@ -170,6 +171,10 @@ public class ESBoidPopulation {//extends Population{
       updateChildStats();
   		//repopulate based on muplus or lambda selection
       
+      //System.out.println("Pre sort 1: "+ Double.toString(children[0].getTrial(0)));
+      //System.out.println("Pre sort 1: "+ children[0].ESString());
+      //System.out.println("Pre sort best: "+ children[bestChild].ESString());
+      
       if (!popSorted){
         Arrays.sort(pop, new sortByFitness());
         popSorted = true;
@@ -178,6 +183,10 @@ public class ESBoidPopulation {//extends Population{
         Arrays.sort(children, new sortByFitness());
         childSorted = true;
       }
+      
+      //System.out.println("Post sort best: "+ children[0].ESString());
+      //System.out.println("Post sort worst: "+ children[children.length - 1].ESString());
+      
       
       double childFit;
       double parentFit;
@@ -230,7 +239,9 @@ public class ESBoidPopulation {//extends Population{
       
       pop = pop_temp;
       //System.out.println("post pop temp 1: "+ Double.toString(pop[0].getFitness()));
-      //System.out.println("post pop temp 1: "+ Double.toString(pop[0].getTrial(0)));
+      //System.out.println("post pop 1: "+ Double.toString(children[0].getTrial(0)));
+      //System.out.println("post pop 1: "+ Double.toString(pop[0].getTrial(0)));
+      //System.out.println("post pop temp 1: "+ Double.toString(pop_temp[0].getTrial(0)));
         
     }
     //crossover always exists, but may frequently return the main parent in ES

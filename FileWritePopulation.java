@@ -76,8 +76,14 @@ public class FileWritePopulation extends ESBoidPopulation {
       
       //given the reliance on Offspring population, the offspring are the generation
       //with more time, this should be updated to the current population instead
-      maxFitness[gen] = Double.toString(maxOffFit);
-      avgFitness[gen] = Double.toString(avgOffFit);
+      
+      //using offspring generation
+      //maxFitness[gen] = Double.toString(maxOffFit);
+      //avgFitness[gen] = Double.toString(avgOffFit);
+      
+      //using parent generation
+      maxFitness[gen] = Double.toString(maxFit);
+      avgFitness[gen] = Double.toString(avgFit);
       bestIndividual[gen] = getBestIndividual().ESString();//from toString
       
     }
