@@ -15,7 +15,7 @@ public class ESBoidIndividual implements Individual {
 	// protected final static double E = 2.71828;
 
 	protected final static int DIMENSION = 4;
-    protected static final int NUM_TRIALS = 3; // Must be <= POPULATION_SIZE in BoidEvolution, may need better way to set
+    protected static final int NUM_TRIALS = 5; // Must be <= POPULATION_SIZE in BoidEvolution, may need better way to set
 	protected final static double MUTATION_PROBABILITY = 0.8;
 	protected final static double CROSSOVER_PROBABILITY = 0.25;
 	

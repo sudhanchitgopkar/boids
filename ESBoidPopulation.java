@@ -28,7 +28,7 @@ public class ESBoidPopulation {//extends Population{
 	protected int bestParent;
 	protected int bestChild;
 	
-	protected static final int numoffspring = 3;
+	protected static final int numoffspring = 5;
 	protected static final boolean muplus = false;
 	
 	// the comparator allows a sorting function during repopulation
